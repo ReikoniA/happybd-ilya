@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>С Днём Рождения, Катя!</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            html, body {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            body {
+                position: fixed;
+                text-align: center;
+            }
+            body, div {
+                padding: 0;
+                margin: 0;
+            }
+            .background {
+                position: absolute;
+                background-image: url('./bg.jpg');
+                background-size: cover;
+            }
+            @media (min-aspect-ratio: 5000/3333) {
+                .background {
+                    --h: calc(3333/5000 * 100vw);
+                    width: 100vw;
+                    height: var(--h);
+                    left: 0;
+                    top: calc(50vh - var(--h) / 2);
+                }
+            }
+            @media not all and (min-aspect-ratio: 5000/3333) {
+                .background {
+                    --w: calc(5000/3333 * 100vh);
+                    width: var(--w);
+                    height: 100vh;
+                    left: calc(50vw - var(--w) / 2);
+                    top: 0;
+                }
+            }
+            .background > div {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+            .background > div * {
+                pointer-events: initial;
+            }
+            .envelope-container, .envelope-container2 {
+                display: inline-block;
+                position: relative;
+                height: 100%;
+                top: 0;
+                aspect-ratio: 594 / 414;
+                background-size: cover;
+                transform: scale(0.486) rotate(-19deg) translate(2%, 33%);
+            }
+            .envelope-container {
+                background-image: url('./env6.png');
+                perspective: 1500pt;
+            }
+            .envelope-container .envelope-top {
+                position: absolute;
+                left: 0;
+                bottom: 100%;
+                width: 100%;
+                aspect-ratio: 594 / 321;
+                background-size: cover;
+                background-image: url('./env4.png');
+                transform-style: preserve-3d;
+                -webkit-backface-visibility: hidden; /* Safari */
+                backface-visibility: hidden;
+                transform-origin: center bottom;
+                transform: rotateX(-180deg);
+            }
+            .envelope-container.open .envelope-top {
+                animation: open1 1s ease-out both;
+            }
+            .envelope-container img {
+                position: absolute;
+                left: 90%;
+                bottom: 90%;
+                width: 40%;
+                height: auto;
+                opacity: 1;
+                transition: opacity 0.5s;
+            }
+            .envelope-container.open img {
+                opacity: 0;
+            }
+            .envelope-container2 {
+                pointer-events: none !important;
+                background-image: url('./env5.png');
+                perspective: 1500pt;
+            }
+            .envelope-container2 * {
+                position: absolute;
+                pointer-events: none !important;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                transform-style: preserve-3d;
+            }
+            .envelope-container2 .envelope-top {
+                background-image: url('./env3.png');
+                -webkit-backface-visibility: hidden; /* Safari */
+                backface-visibility: hidden;
+                transform-origin: center top;
+            }
+            .envelope-container2 .envelope-top-shadow {
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                background-image: url('./env2.png');
+            }
+            .envelope-container2.open .envelope-top-shadow {
+                animation: open2shadow 0.5s ease-out both;
+            }
+            .envelope-container2.open .envelope-top {
+                animation: open2 1s ease-out both;
+            }
+            #flip-card {
+                display: inline-block;
+                position: relative;
+                height: 60%;
+                top: 20%;
+                aspect-ratio: 2251 / 1518;
+                background-color: transparent;
+                perspective: 1500pt;
+                cursor: pointer;
+                z-index: 9999;
+            }
+            .flip-card-inner2 {
+                position: relative;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                transform-style: preserve-3d;
+                transform: scale(1.0);
+            }
+            .flip-card-inner {
+                position: relative;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.8s, box-shadow 2s 1s;
+                transform-style: preserve-3d;
+            }
+            #flip-card:not(.inside) .flip-card-inner {
+                /*-webkit-box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25);*/ 
+                box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25);
+            }
+            #flip-card.flipped .flip-card-inner2 {
+                animation: scale1 0.8s;
+            }
+            #flip-card.unflipped .flip-card-inner2 {
+                animation: scale2 0.8s;
+            }
+            #flip-card.flipped .flip-card-inner {
+                transform: rotateY(180deg);
+                animation: shadow1 0.8s;
+            }
+            #flip-card.unflipped .flip-card-inner {
+                animation: shadow2 0.8s;
+            }
+            #flip-card img {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .flip-card-front, .flip-card-back {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                -webkit-backface-visibility: hidden; /* Safari */
+                backface-visibility: hidden;
+            }
+            .flip-card-front {
+
+            }
+            .flip-card-back {
+                transform: rotateY(180deg);
+            }
+            #flip-card.inside {
+                transform: scale(0.74) rotate(-19deg) translate(3%, 35.5%);
+                z-index: initial;
+            }
+            #flip-card.outside {
+                animation: reveal 1.5s 1s ease-in-out both;
+            }
+            #flip-card.inside .flip-card-inner {
+                /*-webkit-box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.0);*/ 
+                box-shadow: 0pt 0pt 0pt 0pt rgba(0,0,0,0.0);
+            }
+            #click2img {
+                position: absolute;
+                top: 35% !important;
+                height: 30% !important;
+                left: initial !important;
+                right: -10% !important;
+                width: auto !important;
+                opacity: 0;
+                transition: opacity 0.1s;
+                animation: pulse 0.5s infinite both;
+            }
+            #flip-card.outside #click2img {
+                opacity: 1;
+                transition: opacity 0.5s 3s;
+            }
+            @keyframes pulse {
+                from {
+                    transform: scale(1.0);
+                }
+
+                40% {
+                    transform: scale(1.0);
+                }
+
+                50% {
+                    transform: scale(0.9);
+                }
+
+                60% {
+                    transform: scale(1.0);
+                }
+
+                to {
+                    transform: scale(1.0);
+                }
+            }
+            @keyframes open1 {
+                from {
+                    transform: rotateX(-180deg);
+                }
+
+                to {
+                    transform: rotateX(-5deg);
+                }
+            }
+            @keyframes open2 {
+                from {
+                    transform: rotateX(-5deg);
+                }
+
+                to {
+                    transform: rotateX(-180deg);
+                }
+            }
+            @keyframes open2shadow {
+                from {
+                    opacity: 1;
+                }
+
+                to {
+                    opacity: 0;
+                }
+            }
+            @keyframes reveal {
+                from {
+                    transform: scale(0.74) rotate(-19deg) translate(3%, 35.5%);
+                    z-index: initial;
+                }
+
+                50% {
+                    transform: scale(0.74) rotate(-19deg) translate(3%, 35.5%) translate(0, -95%);
+                    z-index: initial;
+                }
+
+                70% {
+                    transform: scale(0.74) rotate(-19deg) translate(3%, 35.5%) translate(0, -104%) rotate(9deg) translate(4%, -20%);
+                    z-index: 9999;
+                }
+
+                90% {
+                    transform: scale(1.07);
+                }
+
+                to {
+                    transform: scale(1.0);
+                }
+            }
+            @keyframes scale1 {
+                from {
+                    transform: scale(1.0);
+                }
+
+                50% {
+                    transform: scale(1.1);
+                }
+
+                to {
+                    transform: scale(1.0);
+                }
+            }
+            @keyframes scale2 {
+                from {
+                    transform: scale(1.0);
+                }
+
+                50% {
+                    transform: scale(1.1);
+                }
+
+                to {
+                    transform: scale(1.0);
+                }
+            }
+            @keyframes shadow1 {
+                from {
+                    -webkit-box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25); 
+                    box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25);
+                }
+
+                39%, 61% {
+                    -webkit-box-shadow: 0pt 0pt 75pt 25pt rgba(0,0,0,0.0); 
+                    box-shadow: 0pt 0pt 75pt 25pt rgba(0,0,0,0.0);
+                }
+
+                to {
+                    -webkit-box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25); 
+                    box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25);
+                }
+            }
+            @keyframes shadow2 {
+                from {
+                    -webkit-box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25); 
+                    box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25);
+                }
+
+                39%, 61% {
+                    -webkit-box-shadow: 0pt 0pt 75pt 25pt rgba(0,0,0,0.0); 
+                    box-shadow: 0pt 0pt 75pt 25pt rgba(0,0,0,0.0);
+                }
+
+                to {
+                    -webkit-box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25); 
+                    box-shadow: 0pt 0pt 15pt 5pt rgba(0,0,0,0.25);
+                }
+            }
+            #overlay {
+                font-family: sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+            }
+            #overlay > span {
+                display: inline-block;
+            }
+            @media (min-height: 400pt) and (min-width: 400pt) {
+                #overlay.hidden {
+                    display: none !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="background">
+            <div>
+                <div class="envelope-container" id="env-cnt-1">
+                    <img src="./click.png" />
+                    <div class="envelope-top">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div id="flip-card" class="inside">
+                    <div class="flip-card-inner2">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <img src="./front.jpg" />
+                                <img id="click2img" src="./click2.png" />
+                            </div>
+                            <div class="flip-card-back">
+                                <img src="./back.jpg" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="envelope-container2" id="env-cnt-2">
+                    <div class="envelope-top-shadow">
+                    </div>
+                    <div class="envelope-top">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="overlay"><span id="message">Загрузка...</span></div>
+        <audio id="intro-jingle" preload="auto" src="./music.mp3"> </audio>
+        <script>
+            document.addEventListener('readystatechange', event => { 
+                if (event.target.readyState === "complete") {
+                    var overlay = document.getElementById("overlay");
+                    var msg = document.getElementById("message");
+                    overlay.className = "hidden";
+                    msg.innerText = "Используй браузер на большом экране ;)";
+                    var introJingle = document.getElementById("intro-jingle");
+                    var card = document.getElementById("flip-card");
+                    var envCnt1 = document.getElementById("env-cnt-1");
+                    var envCnt2 = document.getElementById("env-cnt-2");
+                    var isAnimating = false;
+                    card.addEventListener('transitionstart', function() {
+                        isAnimating = true;
+                    });
+                    card.addEventListener('transitionend', () => {
+                        isAnimating = false;
+                    });
+                    card.addEventListener('transitioncancel', () => {
+                        isAnimating = false;
+                    });
+                    card.onclick = function () {
+                        if (!isAnimating) {
+                            if (card.className == "inside") {
+                                card.className = "outside";
+                                envCnt1.className = "envelope-container open";
+                                envCnt2.className = "envelope-container2 open";
+                                introJingle.play();
+                            } else {
+                                if (card.className == "flipped") {
+                                    card.className = "unflipped";
+                                } else {
+                                    card.className = "flipped";
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
